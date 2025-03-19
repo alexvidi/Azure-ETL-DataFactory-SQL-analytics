@@ -93,13 +93,13 @@ The objective of this project is to build a scalable and structured ETL (Extract
 
 # Deployment Steps
 
-**1️⃣ Setup Azure Resources**
+**1️ Setup Azure Resources**
 
 * Create an Azure Storage Account (Blob Storage) for raw data.
 * Deploy an Azure SQL Database to store structured data.
 * Set up Azure Data Factory for ETL orchestration.
 
-**2️⃣ Configure Data Pipeline**
+**2️ Configure Data Pipeline**
 
 * Create Linked Services in Azure Data Factory (Blob Storage & SQL).
 * Define Datasets for Parquet data (raw) and SQL Database (structured).
@@ -108,7 +108,7 @@ The objective of this project is to build a scalable and structured ETL (Extract
     * Transform data (Data Flow Transformations).
     * Load cleaned data into Azure SQL Database.
 
-**3️⃣ Run & Monitor Pipeline**
+**3️ Run & Monitor Pipeline**
 
 * Trigger the ETL pipeline in Azure Data Factory.
 * Monitor execution status in the ADF UI.
