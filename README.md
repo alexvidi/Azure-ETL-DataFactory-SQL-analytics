@@ -1,114 +1,136 @@
-# Azure Data Engineering Project: Sales Data Pipeline
+# Cloud-Based ETL Pipeline: Transforming Sales Data with Azure & Power BI
 
 ## Project Overview
-This project demonstrates a **professional end-to-end data pipeline** using **Azure Data Services** to process and analyze sales data. The pipeline integrates multiple Azure services to ingest, transform, and store data for analytics.
+
+This project demonstrates a professional end-to-end data pipeline leveraging Azure Data Services to process and analyze sales data efficiently. The pipeline is designed to handle data ingestion, transformation, and visualization while ensuring best practices in data engineering.
+
+The objective of this project is to build a scalable and structured ETL (Extract, Transform, Load) pipeline that ingests sales data from an external source, processes it using Azure Data Factory, and stores the refined data in Azure SQL Database. The processed data is then visualized in Power BI to generate insightful business analytics.
+
+## Architecture Workflow
+
+# End-to-End Data Pipeline Flow
+
+**1️⃣ Data Ingestion**
+
+* Data is extracted from an external Parquet dataset and stored in Azure Blob Storage.
+* Python scripts handle the ingestion and loading process.
+
+**2️⃣ Data Transformation & Load**
+
+* Azure Data Factory orchestrates the ETL process:
+    * Data is extracted from Azure Blob Storage.
+    * Data is transformed using Data Flows:
+        * Category Standardization for consistent classification.
+        * Stock Status Classification to indicate inventory levels.
+        * Product Popularity Segmentation based on sales and availability.
+        * Data Type Conversions to match SQL schema.
+    * The cleaned data is loaded into Azure SQL Database.
+
+**3️⃣ Data Storage & Querying**
+
+* Azure SQL Database stores the transformed and structured data.
+* Azure Data Studio is used for SQL querying, validation, and analysis.
+
+**4️⃣ Data Visualization**
+
+* Power BI is used to create dashboards with key business insights.
+* Reports include:
+    * Stock Status Distribution
+    * Average Price per Category
+    * Product Popularity by Category
+* Reports are stored in .pbix and .pdf formats.
 
 ## Technologies Used
-- **Azure Storage Account**: Stores raw data in **Parquet format**.
-- **Azure SQL Database**: Stores structured sales data for querying and analysis.
-- **Azure Data Factory**: Orchestrates the ETL process.
-- **Azure Data Studio**: Used for SQL querying and data validation.
-- **Python**: Scripts for data ingestion and transformation.
-- **GitHub**: Version control for project artifacts.
+
+* **Azure Storage Account:** Stores raw sales data in Parquet format.
+* **Azure Data Factory:** Manages ETL processes for data transformation.
+* **Azure SQL Database:** Stores structured sales data for querying and analytics.
+* **Azure Data Studio:** SQL querying and data validation.
+* **Power BI:** Interactive dashboards and business intelligence reports.
+* **Python:** Custom scripts for data extraction and ingestion.
+* **GitHub:** Version control and project repository management.
 
 ---
 ##  Project Structure
 ```
-/AZURE_PROJECT_PIPELINE/
-│── config/                           # Configuration settings
-│   ├── config.py                      # Script for managing configurations
-│── data/                              # Raw data storage
-│   ├── products.parquet               # Sample dataset in Parquet format
-│── images/                            # Screenshots for documentation
-│   ├── azure_data_factory.png         # Azure Data Factory main dashboard
-│   ├── container_azure.png            # Azure Blob Storage container
-│   ├── file_upload_azure.png          # File upload process in Blob Storage
-│   ├── mapping_azure_factory.png      # Schema mapping in Azure Data Factory
-│   ├── pipeline_succeeded_azure.png   # Successful pipeline execution
-│   ├── query_table_Azure_Data_Studio.png # Query execution in Azure Data Studio
-│   ├── resources_azure.png            # Azure resource group overview
-│   ├── sink_azure_factory.png         # Sink dataset configuration in Data Factory
-│   ├── source_azure_factory.png       # Source dataset configuration in Data Factory
-│   ├── sql_data_studio_structure.png  # SQL table structure in Azure Data Studio
-│── notebooks/                         # Query results and analysis
-│   ├── results_saved_query.csv        # Saved results from SQL queries
-│── src/                               # Python scripts for data processing
-│   ├── extract_data.py                # Extracts data from API
-│   ├── upload_to_blob.py              # Uploads data to Azure Storage
-│   ├── load_to_sql.py                 # Loads processed data into SQL Database
-│── venv/                              # Virtual environment (excluded in .gitignore)
-│── .env                               # Environment variables (excluded in .gitignore)
-│── .gitignore                         # Git ignore file
-│── README.md                          # Project documentation (this file)
-│── requirements.txt                    # Python dependencies
+/azure-sales-pipeline/
+│── config/                          # Configuration files
+│   ├── config.py                     # Main configuration script
+│
+│── data/                             # Data storage
+│   ├── processed/                     # Processed data
+│   │   ├── Results_pipeline_sql_data_studio.csv  # Processed results from SQL Data Studio
+│   ├── raw/                           # Raw data
+│   │   ├── products.parquet            # Original dataset
+│
+│── images/                           # Project-related images
+│   ├── azure_data_factory/             # Azure Data Factory images
+│   │   ├── azure_data_studio_validate_pipeline.png  # Validation of pipeline in Data Studio
+│   │   ├── data_flow_etl_estructure.png  # Data Flow ETL process structure
+│   │   ├── pipeline_activity_dataflow_succeeded.png  # Successful Dataflow pipeline execution
+│   ├── azure_data_studio_sql/          # Azure Data Studio SQL queries
+│   │   ├── azure_data_studio_queries.png  # Queries executed in Azure Data Studio
+│
+│── reports/                          # Reports generated from data analysis
+│   ├── power_bi/                       # Power BI reports
+│   │   ├── Sales_Analytics_Report.pbix  # Power BI report file
+│   │   ├── Sales_Analytics_Report.pdf   # Exported report in PDF format
+│
+│── src/                              # Source code for data processing
+│   ├── extract_data.py                 # Script to extract data from the source
+│   ├── load_to_sql.py                   # Script to load data into SQL
+│   ├── upload_to_blob.py                 # Script to upload data to Azure Blob Storage
+│
+│── venv/                             # Virtual environment for dependencies
+│
+│── .env                              # Environment variables configuration
+│── .gitignore                        # Git ignore file
+│── README.md                         # Project documentation
+│── requirements.txt                   # Python dependencies list               
 ```
 
 ---
-##  End-to-End Data Pipeline Flow
 
-### **1️ Data Ingestion**
-- Data is extracted from a **public API** and stored in **Parquet format** inside **Azure Blob Storage**.
-- **Python scripts** handle this step.
+# Deployment Steps
 
-### **2️ Data Transformation & Load**
-- **Azure Data Factory** moves the data from **Blob Storage** to **Azure SQL Database**.
-- Data is transformed (schema mapping, data cleaning).
+**1️⃣ Setup Azure Resources**
 
-### **3️ Data Storage & Querying**
-- The structured data is stored in **Azure SQL Database**.
-- **Azure Data Studio** is used for SQL queries and analytics.
+* Create an Azure Storage Account (Blob Storage) for raw data.
+* Deploy an Azure SQL Database to store structured data.
+* Set up Azure Data Factory for ETL orchestration.
 
----
-##  SQL Queries for Data Analysis
-### **Top 5 Most Sold Categories**
-```sql
-SELECT category, COUNT(*) AS product_count
-FROM products
-GROUP BY category
-ORDER BY product_count DESC
-LIMIT 5;
-```
+**2️⃣ Configure Data Pipeline**
 
-### **Average Price per Category**
-```sql
-SELECT category, AVG(price) AS avg_price
-FROM products
-GROUP BY category
-ORDER BY avg_price DESC;
-```
+* Create Linked Services in Azure Data Factory (Blob Storage & SQL).
+* Define Datasets for Parquet data (raw) and SQL Database (structured).
+* Implement a Data Flow Activity pipeline to:
+    * Extract from Blob Storage.
+    * Transform data (Data Flow Transformations).
+    * Load cleaned data into Azure SQL Database.
 
----
-##  Deployment Steps
-### **1️ Setup Azure Resources**
-1. **Create an Azure Storage Account** (Blob Storage).
-2. **Create an Azure SQL Database**.
-3. **Create an Azure Data Factory instance**.
+**3️⃣ Run & Monitor Pipeline**
 
-### **2️ Configure Data Pipeline**
-1. Create **Linked Services** in **Azure Data Factory** (Storage & SQL).
-2. Set up **Datasets** for Blob Storage (Parquet) and SQL.
-3. Create a **Copy Activity** pipeline from **Blob Storage → SQL Database**.
+* Trigger the ETL pipeline in Azure Data Factory.
+* Monitor execution status in the ADF UI.
+* Validate the processed data using SQL queries in Azure Data Studio.
 
-### **3️ Run & Monitor Pipeline**
-- **Trigger and execute pipeline** in **Azure Data Factory**.
-- **Validate data in Azure SQL Database** using SQL queries.
+## Screenshots & Proof of Work
+
+* Azure Data Factory Pipeline Execution
+* Data Flow Transformations
+* SQL Data Validation in Azure Data Studio
+* Power BI Reports and Dashboards
+
+All screenshots are stored in the `images/` folder under:
+
+* `images/azure_data_factory/`
+* `images/azure_data_studio_sql/`
+* `reports/power_bi/`
 
 ---
-##  Screenshots & Proof of Work
--  **Azure Data Factory Overview**
--  **Pipeline Design (Copy Data Activity)**
--  **Storage to SQL Mapping in Data Factory**
--  **SQL Queries in Azure Data Studio**
 
-Find screenshots in the `images/` folder.
 
----
-##  Key Takeaways
-- **End-to-end Azure data pipeline with real-world use case.**
-- **Integration of multiple Azure services professionally.**
-- **Optimized for cloud-based data processing.**
 
----
 
 
 
