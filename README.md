@@ -10,12 +10,12 @@ The objective of this project is to build a scalable and structured ETL (Extract
 
 # End-to-End Data Pipeline Flow
 
-**1️⃣ Data Ingestion**
+**1️ Data Ingestion**
 
 * Data is extracted from an external Parquet dataset and stored in Azure Blob Storage.
 * Python scripts handle the ingestion and loading process.
 
-**2️⃣ Data Transformation & Load**
+**2️ Data Transformation & Load**
 
 * Azure Data Factory orchestrates the ETL process:
     * Data is extracted from Azure Blob Storage.
@@ -26,12 +26,12 @@ The objective of this project is to build a scalable and structured ETL (Extract
         * Data Type Conversions to match SQL schema.
     * The cleaned data is loaded into Azure SQL Database.
 
-**3️⃣ Data Storage & Querying**
+**3️ Data Storage & Querying**
 
 * Azure SQL Database stores the transformed and structured data.
 * Azure Data Studio is used for SQL querying, validation, and analysis.
 
-**4️⃣ Data Visualization**
+**4️ Data Visualization**
 
 * Power BI is used to create dashboards with key business insights.
 * Reports include:
