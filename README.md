@@ -129,7 +129,9 @@ All screenshots are stored in the `images/` folder under:
 
 ---
 
+## Author
 
+ Alexandre Vidal De Palol
 
 
 
