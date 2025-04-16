@@ -34,10 +34,10 @@ graph TD
     subgraph ADF[Azure Data Factory Pipeline]
         D --> E[Data Flow]
         E -->|Transform| F[Data Transformations]
-        F -->|Standardize| F1[Category<br>Standardization]
-        F -->|Segment| F2[Product<br>Popularity]
-        F -->|Classify| F3[Stock Status<br>Classification]
-        F -->|Convert| F4[Data Type<br>Conversions]
+        F -->|SimplifyCategory| F1[Category<br>Standardization]
+        F -->|SetProductPopularity| F2[Product<br>Popularity Score]
+        F -->|SetAvailabilityStatus| F3[Stock Status<br>Logic]
+        F -->|ConvertDataTypes| F4[Data Type<br>Mappings]
     end
     
     F1 & F2 & F3 & F4 --> G[Azure SQL Database]
