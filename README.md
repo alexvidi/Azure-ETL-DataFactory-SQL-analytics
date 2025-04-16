@@ -1,137 +1,164 @@
-# Cloud-Based ETL Pipeline: Transforming Sales Data with Azure & Power BI
+# Cloud-Based ETL Pipeline: Sales Data Transformation with Azure & Power BI
 
-## Project Overview
+## Executive Summary
 
-This project demonstrates a professional end-to-end data pipeline leveraging Azure Data Services to process and analyze sales data efficiently. The pipeline is designed to handle data ingestion, transformation, and visualization while ensuring best practices in data engineering.
+This repository presents a robust, end-to-end ETL (Extract, Transform, Load) pipeline for sales data, leveraging Microsoft Azure services and Power BI for scalable data processing and insightful analytics. The solution demonstrates best practices in cloud data engineering, from ingestion to visualization, and is suitable for enterprise-grade analytics workflows.
 
-The objective of this project is to build a scalable and structured ETL (Extract, Transform, Load) pipeline that ingests sales data from an external source, processes it using Azure Data Factory, and stores the refined data in Azure SQL Database. The processed data is then visualized in Power BI to generate insightful business analytics.
+---
 
-## Architecture Workflow
+## Features
 
-# End-to-End Data Pipeline Flow
+- Automated ingestion of raw sales data in Parquet format
+- Secure upload to Azure Blob Storage
+- Orchestrated ETL with Azure Data Factory (ADF)
+- Data transformation: category standardization, stock status, popularity segmentation, and type conversions
+- Structured storage in Azure SQL Database
+- Data validation and querying with Azure Data Studio
+- Interactive dashboards and business intelligence with Power BI
+- Modular Python scripts for extraction, loading, and cloud integration
 
-**1️ Data Ingestion**
+---
 
-* Data is extracted from an external Parquet dataset and stored in Azure Blob Storage.
-* Python scripts handle the ingestion and loading process.
+## Architecture Overview
 
-**2️ Data Transformation & Load**
+### End-to-End Data Pipeline
 
-* Azure Data Factory orchestrates the ETL process:
-    * Data is extracted from Azure Blob Storage.
-    * Data is transformed using Data Flows:
-        * Category Standardization for consistent classification.
-        * Stock Status Classification to indicate inventory levels.
-        * Product Popularity Segmentation based on sales and availability.
-        * Data Type Conversions to match SQL schema.
-    * The cleaned data is loaded into Azure SQL Database.
+1. **Data Ingestion**
+    - Extract sales data from external Parquet sources
+    - Upload to Azure Blob Storage using Python automation
 
-**3️ Data Storage & Querying**
+2. **Data Transformation & Load**
+    - Orchestrate ETL with Azure Data Factory:
+        - Extract from Blob Storage
+        - Transform data (standardization, classification, segmentation, type conversion)
+        - Load into Azure SQL Database
 
-* Azure SQL Database stores the transformed and structured data.
-* Azure Data Studio is used for SQL querying, validation, and analysis.
+3. **Data Storage & Querying**
+    - Store processed data in Azure SQL Database
+    - Validate and analyze using Azure Data Studio
 
-**4️ Data Visualization**
+4. **Data Visualization**
+    - Build Power BI dashboards for business insights:
+        - Stock status distribution
+        - Average price per category
+        - Product popularity by category
+    - Reports available in .pbix and .pdf formats
 
-* Power BI is used to create dashboards with key business insights.
-* Reports include:
-    * Stock Status Distribution
-    * Average Price per Category
-    * Product Popularity by Category
-* Reports are stored in .pbix and .pdf formats.
+---
 
 ## Technologies Used
 
-* **Azure Storage Account:** Stores raw sales data in Parquet format.
-* **Azure Data Factory:** Manages ETL processes for data transformation.
-* **Azure SQL Database:** Stores structured sales data for querying and analytics.
-* **Azure Data Studio:** SQL querying and data validation.
-* **Power BI:** Interactive dashboards and business intelligence reports.
-* **Python:** Custom scripts for data extraction and ingestion.
-* **GitHub:** Version control and project repository management.
+- **Azure Storage Account**: Cloud storage for raw data
+- **Azure Data Factory**: ETL orchestration and transformation
+- **Azure SQL Database**: Structured data storage
+- **Azure Data Studio**: SQL querying and validation
+- **Power BI**: Data visualization and reporting
+- **Python**: Scripting for automation and integration
+- **GitHub**: Version control and collaboration
 
 ---
-##  Project Structure
+
+## Project Structure
+
 ```
 /azure-sales-pipeline/
 │── config/                          # Configuration files
-│   ├── config.py                     # Main configuration script
+│   ├── config.py                    # Main configuration script
 │
-│── data/                             # Data storage
-│   ├── processed/                     # Processed data
-│   │   ├── Results_pipeline_sql_data_studio.csv  # Processed results from SQL Data Studio
-│   ├── raw/                           # Raw data
-│   │   ├── products.parquet            # Original dataset
+│── data/                            # Data storage
+│   ├── processed/                   # Processed data
+│   │   ├── Results_pipeline_sql_data_studio.csv  # Processed results
+│   ├── raw/                         # Raw data
+│   │   ├── products.parquet         # Original dataset
 │
-│── images/                           # Project-related images
-│   ├── azure_data_factory/             # Azure Data Factory images
-│   │   ├── azure_data_studio_validate_pipeline.png  # Validation of pipeline in Data Studio
-│   │   ├── data_flow_etl_estructure.png  # Data Flow ETL process structure
-│   │   ├── pipeline_activity_dataflow_succeeded.png  # Successful Dataflow pipeline execution
-│   ├── azure_data_studio_sql/          # Azure Data Studio SQL queries
-│   │   ├── azure_data_studio_queries.png  # Queries executed in Azure Data Studio
+│── images/                          # Project images
+│   ├── azure_data_factory/          # Azure Data Factory visuals
+│   ├── azure_data_studio_sql/       # Azure Data Studio screenshots
 │
-│── reports/                          # Reports generated from data analysis
-│   ├── power_bi/                       # Power BI reports
-│   │   ├── Sales_Analytics_Report.pbix  # Power BI report file
-│   │   ├── Sales_Analytics_Report.pdf   # Exported report in PDF format
+│── reports/                         # Analytical reports
+│   ├── power_bi/                    # Power BI reports (.pbix, .pdf)
 │
-│── src/                              # Source code for data processing
-│   ├── extract_data.py                 # Script to extract data from the source
-│   ├── load_to_sql.py                   # Script to load data into SQL
-│   ├── upload_to_blob.py                 # Script to upload data to Azure Blob Storage
+│── src/                             # Source code
+│   ├── extract_data.py              # Data extraction script
+│   ├── load_to_sql.py               # SQL loading script
+│   ├── upload_to_blob.py            # Blob upload script
 │
-│── venv/                             # Virtual environment for dependencies
-│
-│── .env                              # Environment variables configuration
-│── .gitignore                        # Git ignore file
-│── README.md                         # Project documentation
-│── requirements.txt                   # Python dependencies list               
+│── venv/                            # Python virtual environment
+│── .env                             # Environment variables
+│── .gitignore                       # Git ignore file
+│── README.md                        # Project documentation
+│── requirements.txt                 # Python dependencies
 ```
 
 ---
 
-# Deployment Steps
+## Getting Started
 
-**1️ Setup Azure Resources**
+### Prerequisites
+- Python 3.8+
+- Azure Subscription (Blob Storage, SQL Database, Data Factory)
+- Power BI Desktop (for .pbix reports)
 
-* Create an Azure Storage Account (Blob Storage) for raw data.
-* Deploy an Azure SQL Database to store structured data.
-* Set up Azure Data Factory for ETL orchestration.
+### Setup Instructions
+1. Clone this repository
+2. Create and activate a Python virtual environment
+3. Install dependencies: `pip install -r requirements.txt`
+4. Configure environment variables in `.env` and `config/config.py`
+5. Follow the deployment steps below
 
-**2️ Configure Data Pipeline**
+---
 
-* Create Linked Services in Azure Data Factory (Blob Storage & SQL).
-* Define Datasets for Parquet data (raw) and SQL Database (structured).
-* Implement a Data Flow Activity pipeline to:
-    * Extract from Blob Storage.
-    * Transform data (Data Flow Transformations).
-    * Load cleaned data into Azure SQL Database.
+## Deployment Steps
 
-**3️ Run & Monitor Pipeline**
+1. **Provision Azure Resources**
+    - Create Azure Storage Account (Blob Storage)
+    - Deploy Azure SQL Database
+    - Set up Azure Data Factory
 
-* Trigger the ETL pipeline in Azure Data Factory.
-* Monitor execution status in the ADF UI.
-* Validate the processed data using SQL queries in Azure Data Studio.
+2. **Configure Data Pipeline**
+    - Create Linked Services in ADF (Blob Storage & SQL)
+    - Define Datasets for Parquet and SQL
+    - Implement Data Flow Activity pipeline:
+        - Extract from Blob Storage
+        - Transform data
+        - Load into SQL Database
+
+3. **Run & Monitor Pipeline**
+    - Trigger ETL pipeline in ADF
+    - Monitor execution in ADF UI
+    - Validate processed data in Azure Data Studio
+
+4. **Visualize in Power BI**
+    - Open `.pbix` report in Power BI Desktop
+    - Refresh data and explore dashboards
+
+---
 
 ## Screenshots & Proof of Work
 
-* Azure Data Factory Pipeline Execution
-* Data Flow Transformations
-* SQL Data Validation in Azure Data Studio
-* Power BI Reports and Dashboards
+- Azure Data Factory pipeline execution
+- Data Flow transformations
+- SQL validation in Azure Data Studio
+- Power BI dashboards
 
-All screenshots are stored in the `images/` folder under:
-
-* `images/azure_data_factory/`
-* `images/azure_data_studio_sql/`
-* `reports/power_bi/`
+All visuals are available in the `images/` and `reports/power_bi/` directories.
 
 ---
 
 ## Author
 
- Alexandre Vidal De Palol
+**Alexandre Vidal**  
+[alexvidaldepalol@gmail.com](mailto:alexvidaldepalol@gmail.com)  
+[LinkedIn](https://www.linkedin.com/in/alex-vidal-de-palol-a18538155/)  
+[GitHub](https://github.com/alexvidi)
+
+**Project Repository:** [Azure_Project_ETL_SQL_PowerBI](https://github.com/alexvidi/Azure_Project_ETL_SQL_PowerBI)
+
+---
+
+## License
+
+This project is licensed under the MIT License. See `LICENSE` for details.
 
 
 
