@@ -23,6 +23,17 @@ This repository presents a robust, end-to-end ETL (Extract, Transform, Load) pip
 
 ### End-to-End Data Pipeline
 
+```mermaid
+graph TD
+    A[Raw Data (products.parquet)] --> B[Upload to Azure Blob Storage]
+    B --> C[Azure Data Factory (ADF) Pipeline]
+    C --> D[Data Transformation (Standardization, Segmentation, etc.)]
+    D --> E[Azure SQL Database]
+    E --> F[Data Validation (Azure Data Studio)]
+    E --> G[Power BI Dashboard]
+    F --> G
+```
+
 1. **Data Ingestion**
     - Extract sales data from external Parquet sources
     - Upload to Azure Blob Storage using Python automation
