@@ -25,13 +25,31 @@ This repository presents a robust, end-to-end ETL (Extract, Transform, Load) pip
 
 ```mermaid
 graph TD
-    A[Raw Data (products.parquet)] --> B[Upload to Azure Blob Storage]
-    B --> C[Azure Data Factory (ADF) Pipeline]
-    C --> D[Data Transformation (Standardization, Segmentation, etc.)]
-    D --> E[Azure SQL Database]
-    E --> F[Data Validation (Azure Data Studio)]
-    E --> G[Power BI Dashboard]
-    F --> G
+    A[Raw Data<br>products.parquet] --> B[Python Script<br>upload_to_blob.py]
+    B --> C[Azure Blob Storage<br>Raw Data Container]
+    C --> D[Azure Data Factory]
+    
+    subgraph ADF[Azure Data Factory Pipeline]
+        D --> E[Data Flow]
+        E -->|Transform| F[Data Transformations]
+        F -->|Standardize| F1[Category<br>Standardization]
+        F -->|Segment| F2[Product<br>Popularity]
+        F -->|Classify| F3[Stock Status<br>Classification]
+        F -->|Convert| F4[Data Type<br>Conversions]
+    end
+    
+    F1 & F2 & F3 & F4 --> G[Azure SQL Database]
+    
+    G --> H1[Azure Data Studio<br>Validation & Queries]
+    G --> H2[Power BI]
+    
+    H1 --> I[Validation Results<br>CSV Export]
+    H2 --> J[Interactive Dashboard<br>Sales Analytics Report]
+    
+    style ADF fill:#f5f5f5,stroke:#333,stroke-width:2px
+    style A fill:#e1f5fe,stroke:#01579b
+    style G fill:#e8f5e9,stroke:#2e7d32
+    style H2 fill:#fff3e0,stroke:#ef6c00
 ```
 
 1. **Data Ingestion**
