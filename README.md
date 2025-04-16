@@ -25,7 +25,9 @@ This repository presents a robust, end-to-end ETL (Extract, Transform, Load) pip
 
 ```mermaid
 graph TD
-    A[Raw Data<br>products.parquet] --> B[Python Script<br>upload_to_blob.py]
+    API[DummyJSON API] -->|Fetch Data| EX[Python Script<br>extract_data.py]
+    EX -->|Clean & Transform| P[Raw Data<br>products.parquet]
+    P --> B[Python Script<br>upload_to_blob.py]
     B --> C[Azure Blob Storage<br>Raw Data Container]
     C --> D[Azure Data Factory]
     
@@ -47,7 +49,9 @@ graph TD
     H2 --> J[Interactive Dashboard<br>Sales Analytics Report]
     
     style ADF fill:#f5f5f5,stroke:#333,stroke-width:2px
-    style A fill:#e1f5fe,stroke:#01579b
+    style API fill:#dcedc8,stroke:#33691e
+    style EX fill:#dcedc8,stroke:#33691e
+    style P fill:#e1f5fe,stroke:#01579b
     style G fill:#e8f5e9,stroke:#2e7d32
     style H2 fill:#fff3e0,stroke:#ef6c00
 ```
