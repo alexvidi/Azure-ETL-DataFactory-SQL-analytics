@@ -1,54 +1,43 @@
-import pandas as pd
 import requests
+import pandas as pd
 import os
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# Step 1: Set the API endpoint URL
+# This URL provides a list of products in JSON format
+api_url = "https://dummyjson.com/products"
 
-API_URL = os.getenv("API_URL")
+# Step 2: Send a GET request to the API
+# The response returns a dictionary with a key called "products"
+response = requests.get(api_url)
+data = response.json()
 
-def fetch_data():
-    """
-    Fetch data from the DummyJSON API, remove non-primitive columns, and return a Pandas DataFrame.
-    """
-    try:
-        response = requests.get(API_URL)
-        response.raise_for_status()
-        data = response.json()["products"]
+# Step 3: Extract the list of products from the response
+# Each product is a dictionary with different fields (id, title, price, etc.)
+products = data["products"]
 
-        df = pd.DataFrame(data)
+# Step 4: Convert the list of products into a Pandas DataFrame
+# A DataFrame is like a table where each row is a product and each column is a field
+df = pd.DataFrame(products)
 
-        # Identify all non-primitive columns by checking the entire dataframe
-        non_primitive_columns = []
-        for col in df.columns:
-            if df[col].apply(lambda x: isinstance(x, (list, dict))).any():
-                non_primitive_columns.append(col)
+# Step 5: Remove complex columns (like lists or dictionaries)
+# These columns are not useful for simple analysis or saving to Parquet
+for column in df.columns:
+    if df[column].apply(lambda x: isinstance(x, (list, dict))).any():
+        df.drop(columns=column, inplace=True)
 
-        # Remove non-primitive columns
-        if non_primitive_columns:
-            print(f" Removing non-primitive columns: {non_primitive_columns}")
-            df = df.drop(columns=non_primitive_columns)
+# Step 6: Create the output folder
+# This ensures that the folder 'data/raw' is available to save the file
+os.makedirs("data/raw", exist_ok=True)
 
-        return df
+# Step 7: Save the cleaned DataFrame to a Parquet file
+# Parquet is a modern file format that is fast and efficient for large datasets
+output_path = "data/raw/products.parquet"
+df.to_parquet(output_path, index=False)
 
-    except requests.exceptions.RequestException as e:
-        print(f" Error fetching data: {e}")
-        return None
+# Confirm success
+print(f"Data successfully saved to {output_path}")
 
-def save_to_parquet(df, file_path="data/products.parquet"):
-    """
-    Save the cleaned DataFrame to a Parquet file.
-    """
-    if df is not None:
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)
-        df.to_parquet(file_path, engine="pyarrow")
-        print(f" Data successfully saved to {file_path}")
-    else:
-        print(" No data to save.")
-
-if __name__ == "__main__":
-    df = fetch_data()
-    save_to_parquet(df)
-
-
+# Validation
+print("Shape:", df.shape)  # Number of rows and columns
+print("Columns:", df.columns.tolist())  # List of column names
+print(df.head())  # Preview of the first 5 rows

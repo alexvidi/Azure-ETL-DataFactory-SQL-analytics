@@ -1,182 +1,157 @@
-# Cloud-Based ETL Pipeline: Sales Data Transformation with Azure & Power BI
+##  Project Overview
 
-## Executive Summary
+This repository implements a **cloud‑based ETL pipeline** and visualization layer for product sales data. It demonstrates end‑to‑end data engineering best practices using **Python**, **Azure services** (Blob Storage, Data Factory, SQL Database) and **Power BI** for reporting.
 
-This repository presents a robust, end-to-end ETL (Extract, Transform, Load) pipeline for sales data, leveraging Microsoft Azure services and Power BI for scalable data processing and insightful analytics. The solution demonstrates best practices in cloud data engineering, from ingestion to visualization, and is suitable for enterprise-grade analytics workflows.
+### Key Features
 
----
+* **Extract**: Fetch product data from an external API and store in Parquet format using Python.
+* **Load to Cloud**: Upload raw Parquet files to Azure Blob Storage securely.
+* **Orchestrate & Transform**: Use Azure Data Factory (ADF) to read the Parquet source, apply schema management, and load into Azure SQL Database.
+* **Data Validation & Queries**: Store a set of SQL scripts for exploration and validation in the `queries/` folder.
+* **Visualization**: Build an insightful Power BI report displaying average price vs. rating by category.
 
-## Features
-
-- Automated ingestion of raw sales data in Parquet format
-- Secure upload to Azure Blob Storage
-- Orchestrated ETL with Azure Data Factory (ADF)
-- Data transformation: category standardization, stock status, popularity segmentation, and type conversions
-- Structured storage in Azure SQL Database
-- Data validation and querying with Azure Data Studio
-- Interactive dashboards and business intelligence with Power BI
-- Modular Python scripts for extraction, loading, and cloud integration
-
----
-
-## Architecture Overview
-
-### End-to-End Data Pipeline
-
-```mermaid
-graph TD
-    API[DummyJSON API] -->|Fetch Data| EX[Python Script<br>extract_data.py]
-    EX -->|Clean & Transform| P[Raw Data<br>products.parquet]
-    P --> B[Python Script<br>upload_to_blob.py]
-    B --> C[Azure Blob Storage<br>Raw Data Container]
-    C --> D[Azure Data Factory]
-    
-    subgraph ADF[Azure Data Factory Pipeline]
-        D --> E[Data Flow]
-        E -->|Transform| F[Data Transformations]
-        F -->|SimplifyCategory| F1[Category<br>Standardization]
-        F -->|SetProductPopularity| F2[Product<br>Popularity Score]
-        F -->|SetAvailabilityStatus| F3[Stock Status<br>Logic]
-        F -->|ConvertDataTypes| F4[Data Type<br>Mappings]
-    end
-    
-    F1 & F2 & F3 & F4 --> G[Azure SQL Database]
-    
-    G --> H1[Azure Data Studio<br>Validation & Queries]
-    G --> H2[Power BI]
-    
-    H1 --> I[Validation Results<br>CSV Export]
-    H2 --> J[Interactive Dashboard<br>Sales Analytics Report]
-    
-    style ADF fill:#f5f5f5,stroke:#333,stroke-width:2px
-    style API fill:#dcedc8,stroke:#33691e
-    style EX fill:#dcedc8,stroke:#33691e
-    style P fill:#e1f5fe,stroke:#01579b
-    style G fill:#e8f5e9,stroke:#2e7d32
-    style H2 fill:#fff3e0,stroke:#ef6c00
-```
-
-1. **Data Ingestion**
-    - Extract sales data from external Parquet sources
-    - Upload to Azure Blob Storage using Python automation
-
-2. **Data Transformation & Load**
-    - Orchestrate ETL with Azure Data Factory:
-        - Extract from Blob Storage
-        - Transform data (standardization, classification, segmentation, type conversion)
-        - Load into Azure SQL Database
-
-3. **Data Storage & Querying**
-    - Store processed data in Azure SQL Database
-    - Validate and analyze using Azure Data Studio
-
-4. **Data Visualization**
-    - Build Power BI dashboards for business insights:
-        - Stock status distribution
-        - Average price per category
-        - Product popularity by category
-    - Reports available in .pbix and .pdf formats
-
----
-
-## Technologies Used
-
-- **Azure Storage Account**: Cloud storage for raw data
-- **Azure Data Factory**: ETL orchestration and transformation
-- **Azure SQL Database**: Structured data storage
-- **Azure Data Studio**: SQL querying and validation
-- **Power BI**: Data visualization and reporting
-- **Python**: Scripting for automation and integration
-- **GitHub**: Version control and collaboration
-
----
-
-## Project Structure
+##  Repository Structure
 
 ```
-/azure-sales-pipeline/
-│── config/                          # Configuration files
-│   ├── config.py                    # Main configuration script
-│
-│── data/                            # Data storage
-│   ├── processed/                   # Processed data
-│   │   ├── Results_pipeline_sql_data_studio.csv  # Processed results
-│   ├── raw/                         # Raw data
-│   │   ├── products.parquet         # Original dataset
-│
-│── images/                          # Project images
-│   ├── azure_data_factory/          # Azure Data Factory visuals
-│   ├── azure_data_studio_sql/       # Azure Data Studio screenshots
-│
-│── reports/                         # Analytical reports
-│   ├── power_bi/                    # Power BI reports (.pbix, .pdf)
-│
-│── src/                             # Source code
-│   ├── extract_data.py              # Data extraction script
-│   ├── load_to_sql.py               # SQL loading script
-│   ├── upload_to_blob.py            # Blob upload script
-│
-│── venv/                            # Python virtual environment
-│── .env                             # Environment variables
-│── .gitignore                       # Git ignore file
-│── README.md                        # Project documentation
-│── requirements.txt                 # Python dependencies
+Azure_Project_ETL_SQL_PowerBI/
+├── config/                  
+├── data/
+│   └── raw/
+│       └── products.parquet  # Extracted Parquet dataset
+├── queries/                  # SQL scripts for data exploration
+│   ├── avg_price_by_category.sql
+│   ├── top_rated_products.sql
+│   └── products_low_stock.sql
+├── reports/                  # Power BI artifacts and exports
+│   ├── visual_average_price_rating.pbix
+│   ├── visual_average_price_rating.pbit
+│   └── visual_average_price_rating.pdf
+├── src/                      # ETL Python scripts
+│   ├── extract_data.py       # Extract from API, clean, save Parquet
+│   └── upload_to_blob.py     # Upload Parquet to Azure Blob Storage
+├── .env                      # Environment variables 
+├── requirements.txt          # Python dependencies
+├── README.md                 # This documentation
+└── .gitignore
 ```
 
+## Prerequisites
+
+* **Python 3.8+** with `pip` installed
+* **Azure Subscription** with permissions to create:
+
+  * Storage Account (Blob)
+  * Data Factory
+  * SQL Database
+* **Power BI Desktop** for report development
+
+## Setup & Installation
+
+1. **Clone the repository**:
+
+   ```bash
+   git clone https://github.com/alexvidi/Azure_Project_ETL_SQL_PowerBI.git
+   cd Azure_Project_ETL_SQL_PowerBI/src
+   ```
+2. **Create and activate a virtual environment**:
+
+   ```bash
+   python -m venv venv
+   source venv/bin/activate      # macOS/Linux
+   venv\Scripts\activate       # Windows
+   ```
+3. **Install dependencies**:
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+4. **Configure environment variables**:
+
+   * Copy `.env.example` to `.env` and fill in your Azure credentials:
+
+     ```ini
+     STORAGE_ACCOUNT_NAME=...
+     STORAGE_ACCOUNT_KEY=...
+     CONTAINER_NAME=raw
+     SQL_SERVER=...
+     SQL_DATABASE=...
+     SQL_USERNAME=...
+     SQL_PASSWORD=...
+     API_URL=https://dummyjson.com/products
+     ```
+
+## Running the Pipeline Locally
+
+1. **Extract & Save**:
+
+   ```bash
+   python extract_data.py
+   ```
+
+   * Fetches API data, cleans nested columns, writes `products.parquet` to `../data/raw/`.
+2. **Upload to Blob**:
+
+   ```bash
+   python upload_to_blob.py
+   ```
+
+   * Uploads the Parquet file to your Azure Blob Storage container.
+
+> **Note**: Transformation and loading into SQL are performed in Azure Data Factory.
+
+## Azure Data Factory Orchestration
+
+1. **Linked Services**:
+
+   * Connect to Azure Blob Storage and Azure SQL Database using account keys.
+2. **Datasets**:
+
+   * Parquet source: `dataset_parquet`
+   * SQL sink: `ds_sql_products`
+3. **Data Flow**: `df_parquet_to_sql_products`
+
+   * Reads Parquet, maps schema, loads into `dbo.products` table.
+4. **Pipeline**: `etl_products`
+
+   * Triggers the Data Flow for an end‑to‑end run.
+
+After running in **Debug** or with a trigger, verify results in the **Query editor**:
+
+```sql
+SELECT TOP 10 *
+FROM dbo.products;
+```
+
+## Power BI Report
+
+The report file `reports/visual_average_price_rating.pbix` contains a single, impactful visualization:
+
+* **Average Price and Average Rating by Product Category**
+
+### How to view
+
+1. Open the PBIX in Power BI Desktop.
+2. Refresh data connection to Azure SQL Database.
+3. Explore the combined line & column chart.
+
+## SQL Queries for Exploration
+
+Stored in `queries/`:
+
+* `avg_price_by_category.sql`
+* `top_rated_products.sql`
+* `products_low_stock.sql`
+
+Run these in Azure Data Studio or Query Editor for deeper insights.
+
+## Next Steps
+
+* Implement additional transforms in ADF Data Flows.
+* Schedule pipeline runs with ADF triggers.
+* Expand Power BI dashboard with new visuals and slicers.
+
 ---
 
-## Getting Started
-
-### Prerequisites
-- Python 3.8+
-- Azure Subscription (Blob Storage, SQL Database, Data Factory)
-- Power BI Desktop (for .pbix reports)
-
-### Setup Instructions
-1. Clone this repository
-2. Create and activate a Python virtual environment
-3. Install dependencies: `pip install -r requirements.txt`
-4. Configure environment variables in `.env` and `config/config.py`
-5. Follow the deployment steps below
-
----
-
-## Deployment Steps
-
-1. **Provision Azure Resources**
-    - Create Azure Storage Account (Blob Storage)
-    - Deploy Azure SQL Database
-    - Set up Azure Data Factory
-
-2. **Configure Data Pipeline**
-    - Create Linked Services in ADF (Blob Storage & SQL)
-    - Define Datasets for Parquet and SQL
-    - Implement Data Flow Activity pipeline:
-        - Extract from Blob Storage
-        - Transform data
-        - Load into SQL Database
-
-3. **Run & Monitor Pipeline**
-    - Trigger ETL pipeline in ADF
-    - Monitor execution in ADF UI
-    - Validate processed data in Azure Data Studio
-
-4. **Visualize in Power BI**
-    - Open `.pbix` report in Power BI Desktop
-    - Refresh data and explore dashboards
-
----
-
-## Screenshots & Proof of Work
-
-- Azure Data Factory pipeline execution
-- Data Flow transformations
-- SQL validation in Azure Data Studio
-- Power BI dashboards
-
-All visuals are available in the `images/` and `reports/power_bi/` directories.
-
----
 
 ## Author
 
