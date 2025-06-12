@@ -20,13 +20,13 @@ This repository delivers a robust, cloud-native ETL (Extract, Transform, Load) p
 
 ```mermaid
 flowchart TD
-    A[API (DummyJSON)] -->|Extract| B[Python Script (extract_data.py)]
-    B -->|Save as Parquet| C[Raw Data (products.parquet)]
+    A[API DummyJSON] -->|Extract| B[Python Script]
+    B -->|Save as Parquet| C[Raw Data Parquet]
     C -->|Upload| D[Azure Blob Storage]
     D -->|Ingest| E[Azure Data Factory]
-    E -->|Transform & Load| F[Azure SQL Database]
-    F -->|Query| G[SQL Scripts (queries/)]
-    F -->|Visualize| H[Power BI Dashboard (.pbix)]
+    E -->|Transform and Load| F[Azure SQL Database]
+    F -->|Query| G[SQL Scripts]
+    F -->|Visualize| H[Power BI Dashboard]
 ```
 
 ---
