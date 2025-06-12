@@ -1,16 +1,22 @@
-##  Project Overview
+# Azure-Based ETL Pipeline & Power BI Analytics
 
-This repository implements a **cloud‑based ETL pipeline** and visualization layer for product sales data. It demonstrates end‑to‑end data engineering best practices using **Python**, **Azure services** (Blob Storage, Data Factory, SQL Database) and **Power BI** for reporting.
+## Overview
 
-### Key Features
+This repository delivers a robust, cloud-native ETL (Extract, Transform, Load) pipeline and analytics solution for product sales data. Leveraging **Python**, **Azure services** (Blob Storage, Data Factory, SQL Database), and **Power BI**, it demonstrates modern data engineering and business intelligence practices from ingestion to visualization.
 
-* **Extract**: Fetch product data from an external API and store in Parquet format using Python.
-* **Load to Cloud**: Upload raw Parquet files to Azure Blob Storage securely.
-* **Orchestrate & Transform**: Use Azure Data Factory (ADF) to read the Parquet source, apply schema management, and load into Azure SQL Database.
-* **Data Validation & Queries**: Store a set of SQL scripts for exploration and validation in the `queries/` folder.
-* **Visualization**: Build an insightful Power BI report displaying average price vs. rating by category.
+---
 
-## Architecture Diagram
+## Features
+
+- **Automated Data Extraction**: Retrieve product data from an external API and serialize it in Parquet format for efficient storage and processing.
+- **Cloud Data Ingestion**: Securely upload raw Parquet files to Azure Blob Storage.
+- **Orchestrated Transformation**: Use Azure Data Factory (ADF) to manage schema, transform data, and load it into Azure SQL Database.
+- **SQL-Based Validation**: Explore and validate data using modular SQL scripts.
+- **Business Intelligence**: Visualize key metrics (e.g., average price vs. rating by category) in an interactive Power BI dashboard.
+
+---
+
+## Solution Architecture
 
 ```mermaid
 flowchart TD
@@ -23,11 +29,13 @@ flowchart TD
     F -->|Visualize| H[Power BI Dashboard<br/>(.pbix)]
 ```
 
-##  Repository Structure
+---
+
+## Repository Structure
 
 ```
 Azure_Project_ETL_SQL_PowerBI/
-├── config/                  
+├── config/                   # Configuration files
 ├── data/
 │   └── raw/
 │       └── products.parquet  # Extracted Parquet dataset
@@ -40,130 +48,131 @@ Azure_Project_ETL_SQL_PowerBI/
 │   ├── visual_average_price_rating.pbit
 │   └── visual_average_price_rating.pdf
 ├── src/                      # ETL Python scripts
-│   ├── extract_data.py       # Extract from API, clean, save Parquet
-│   └── upload_to_blob.py     # Upload Parquet to Azure Blob Storage
-├── .env                      # Environment variables 
+│   ├── extract_data.py
+│   └── upload_to_blob.py
+├── .env                      # Environment variables (not committed)
 ├── requirements.txt          # Python dependencies
-├── README.md                 # This documentation
+├── README.md                 # Project documentation
 └── .gitignore
 ```
 
+---
+
 ## Prerequisites
 
-* **Python 3.8+** with `pip` installed
-* **Azure Subscription** with permissions to create:
-
-  * Storage Account (Blob)
-  * Data Factory
-  * SQL Database
-* **Power BI Desktop** for report development
-
-## Setup & Installation
-
-1. **Clone the repository**:
-
-   ```bash
-   git clone https://github.com/alexvidi/Azure_Project_ETL_SQL_PowerBI.git
-   cd Azure_Project_ETL_SQL_PowerBI/src
-   ```
-2. **Create and activate a virtual environment**:
-
-   ```bash
-   python -m venv venv
-   source venv/bin/activate      # macOS/Linux
-   venv\Scripts\activate       # Windows
-   ```
-3. **Install dependencies**:
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. **Configure environment variables**:
-
-   * Copy `.env.example` to `.env` and fill in your Azure credentials:
-
-     ```ini
-     STORAGE_ACCOUNT_NAME=...
-     STORAGE_ACCOUNT_KEY=...
-     CONTAINER_NAME=raw
-     SQL_SERVER=...
-     SQL_DATABASE=...
-     SQL_USERNAME=...
-     SQL_PASSWORD=...
-     ```
-
-## Running the Pipeline Locally
-
-1. **Extract & Save**:
-
-   ```bash
-   python extract_data.py
-   ```
-
-   * Fetches API data, cleans nested columns, writes `products.parquet` to `../data/raw/`.
-2. **Upload to Blob**:
-
-   ```bash
-   python upload_to_blob.py
-   ```
-
-   * Uploads the Parquet file to your Azure Blob Storage container.
-
-> **Note**: Transformation and loading into SQL are performed in Azure Data Factory.
-
-## Azure Data Factory Orchestration
-
-1. **Linked Services**:
-
-   * Connect to Azure Blob Storage and Azure SQL Database using account keys.
-2. **Datasets**:
-
-   * Parquet source: `dataset_parquet`
-   * SQL sink: `ds_sql_products`
-3. **Data Flow**: `df_parquet_to_sql_products`
-
-   * Reads Parquet, maps schema, loads into `dbo.products` table.
-4. **Pipeline**: `etl_products`
-
-   * Triggers the Data Flow for an end‑to‑end run.
-
-After running in **Debug** or with a trigger, verify results in the **Query editor**:
-
-```sql
-SELECT TOP 10 *
-FROM dbo.products;
-```
-
-## Power BI Report
-
-The report file `reports/visual_average_price_rating.pbix` contains a single, impactful visualization:
-
-* **Average Price and Average Rating by Product Category**
-
-### How to view
-
-1. Open the PBIX in Power BI Desktop.
-2. Refresh data connection to Azure SQL Database.
-3. Explore the combined line & column chart.
-
-## SQL Queries for Exploration
-
-Stored in `queries/`:
-
-* `avg_price_by_category.sql`
-* `top_rated_products.sql`
-* `products_low_stock.sql`
-
-Run these in Azure Data Studio or Query Editor for deeper insights.
-
-## Next Steps
-
-* Implement additional transforms in ADF Data Flows.
-* Schedule pipeline runs with ADF triggers.
-* Expand Power BI dashboard with new visuals and slicers.
+- **Python 3.8+** and `pip`
+- **Azure Subscription** with permissions for:
+  - Blob Storage
+  - Data Factory
+  - SQL Database
+- **Power BI Desktop** (for report development)
 
 ---
 
+## Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/alexvidi/Azure_Project_ETL_SQL_PowerBI.git
+cd Azure_Project_ETL_SQL_PowerBI
+```
+
+### 2. Set Up Python Environment
+
+```bash
+python -m venv venv
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure Environment Variables
+
+Copy `.env.example` to `.env` and populate with your Azure credentials:
+
+```ini
+STORAGE_ACCOUNT_NAME=...
+STORAGE_ACCOUNT_KEY=...
+CONTAINER_NAME=raw
+SQL_SERVER=...
+SQL_DATABASE=...
+SQL_USERNAME=...
+SQL_PASSWORD=...
+```
+
+---
+
+## Running the ETL Pipeline
+
+### 1. Extract Data
+
+```bash
+python src/extract_data.py
+```
+- Fetches product data from the API, cleans it, and writes `products.parquet` to `data/raw/`.
+
+
+### 2. Upload to Azure Blob Storage
+
+```bash
+python src/upload_to_blob.py
+```
+- Uploads the Parquet file to your Azure Blob Storage container.
+
+> **Note:** Data transformation and loading into SQL are orchestrated via Azure Data Factory.
+
+---
+
+## Azure Data Factory Orchestration
+
+- **Linked Services**: Connect to Blob Storage and SQL Database.
+- **Datasets**: Define Parquet source and SQL sink.
+- **Data Flow**: Map schema and load into `dbo.products`.
+- **Pipeline**: Automate the end-to-end ETL process.
+
+After execution, validate with:
+
+```sql
+SELECT TOP 10 * FROM dbo.products;
+```
+
+---
+
+## Power BI Analytics
+
+- Open `reports/visual_average_price_rating.pbix` in Power BI Desktop.
+- Refresh the data connection to Azure SQL Database.
+- Explore the "Average Price and Average Rating by Product Category" visualization.
+
+---
+
+## SQL Query Library
+
+Located in `queries/`:
+
+- `avg_price_by_category.sql`
+- `top_rated_products.sql`
+- `products_low_stock.sql`
+
+Use these scripts in Azure Data Studio or the SQL Query Editor for further analysis.
+
+---
+
+## Next Steps
+
+- Enhance transformation logic in ADF Data Flows.
+- Schedule automated pipeline runs.
+- Expand Power BI dashboards with additional metrics and filters.
+
+---
 
 ## Author
 
@@ -171,8 +180,6 @@ Run these in Azure Data Studio or Query Editor for deeper insights.
 [alexvidaldepalol@gmail.com](mailto:alexvidaldepalol@gmail.com)  
 [LinkedIn](https://www.linkedin.com/in/alex-vidal-de-palol-a18538155/)  
 [GitHub](https://github.com/alexvidi)
-
-**Project Repository:** [Azure_Project_ETL_SQL_PowerBI](https://github.com/alexvidi/Azure_Project_ETL_SQL_PowerBI)
 
 ---
 
