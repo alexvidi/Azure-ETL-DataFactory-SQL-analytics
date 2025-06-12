@@ -10,6 +10,19 @@ This repository implements a **cloud‑based ETL pipeline** and visualization la
 * **Data Validation & Queries**: Store a set of SQL scripts for exploration and validation in the `queries/` folder.
 * **Visualization**: Build an insightful Power BI report displaying average price vs. rating by category.
 
+## Architecture Diagram
+
+```mermaid
+flowchart TD
+    A[API (DummyJSON)] -->|Extract| B[Python Script<br/>(extract_data.py)]
+    B -->|Save as Parquet| C[Raw Data<br/>(products.parquet)]
+    C -->|Upload| D[Azure Blob Storage]
+    D -->|Ingest| E[Azure Data Factory]
+    E -->|Transform & Load| F[Azure SQL Database]
+    F -->|Query| G[SQL Scripts<br/>(queries/)]
+    F -->|Visualize| H[Power BI Dashboard<br/>(.pbix)]
+```
+
 ##  Repository Structure
 
 ```
