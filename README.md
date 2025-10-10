@@ -123,8 +123,11 @@ Each script explores a different business insight:
 | `top3_products_by_stock_value.sql` | Ranks top 3 products by total stock value in each category. |
 
 ### Visualization
-All results were visualized directly in **Azure Data Studio Charts**, such as:
-- **Product Stock Status by Category** (`visualizations ADS/product stock status by category.png`)
+
+An example chart created with **Azure Data Studio** is included in this repository:
+- **Product Stock Status by Category** → `visualizations ADS/product stock status by category.png`
+
+This chart illustrates the distribution of products across stock alert levels (High, Medium, Critical Low) for each category, providing a quick visual overview of inventory health.
 
 ---
 
