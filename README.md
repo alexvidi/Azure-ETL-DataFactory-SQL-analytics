@@ -33,7 +33,7 @@ flowchart TD
 ## Repository Structure
 
 ```
-Azure_Project_ETL_SQL_PowerBI/
+Azure-ETL-DataFactory-SQL-analytics/
 ├── adf_templates/ # Exported ARM templates (ADF) + visuals
 │   ├── factory_base/
 │   │   ├── alexvidi-adf-sales-pipeline_ARMTemplateForFactory.json
