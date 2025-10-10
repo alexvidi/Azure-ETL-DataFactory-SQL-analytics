@@ -105,7 +105,7 @@ The Data Flow will:
 - Load the transformed data into Azure SQL table `dbo.Products_Enriched`.
 
 ### 4. Run Analytical Queries in Azure Data Studio
-Open the SQL files in `/queries ADS` and execute them against your Azure SQL Database to generate insights and charts.
+Open the SQL files in `/queries ADS` and execute them against your SQL Database to generate insights.
 
 ---
 
