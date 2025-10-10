@@ -185,7 +185,6 @@ The templates can be found under `adf_templates/`, organized by factory, pipelin
 
 **Alexandre Vidal**  
 [alexvidaldepalol@gmail.com](mailto:alexvidaldepalol@gmail.com)  
-LinkedIn Profile https://www.linkedin.com/in/alex-vidal-de-palol-a18538155/
 [GitHub](https://github.com/alexvidi)
 
 ---
