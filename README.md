@@ -25,7 +25,7 @@ flowchart TD
     A[Extract Data with Python] -->|Save as Parquet| B[Azure Blob Storage]
     B -->|Ingest into Pipeline| C[Azure Data Factory]
     C -->|"Transform & Load (Data Flow)"| D[Azure SQL Database]
-    D -->|Run Analytical Queries| E[Azure Data Studio Visualizations]
+    D -->|Run Analytical Queries| E[Azure Data Studio]
 ```
 
 ---
