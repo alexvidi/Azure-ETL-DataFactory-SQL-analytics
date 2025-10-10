@@ -1,18 +1,20 @@
-# Azure-Based ETL Pipeline & Power BI Analytics
+# Azure ETL Pipeline with Data Factory & Azure SQL (Azure Data Studio Analytics)
 
 ## Overview
 
-This repository delivers a robust, cloud-native ETL (Extract, Transform, Load) pipeline and analytics solution for product sales data. Leveraging **Python**, **Azure services** (Blob Storage, Data Factory, SQL Database), and **Power BI**, it demonstrates modern data engineering and business intelligence practices from ingestion to visualization.
+This repository implements an end-to-end, cloud-native ETL (Extract–Transform–Load) pipeline for product data using **Python**, **Azure Blob Storage**, **Azure Data Factory (ADF)**, **Azure SQL Database**, and **Azure Data Studio**. It demonstrates modern data engineering practices from ingestion to transformation and SQL-driven analytics.
 
 ---
 
 ## Features
 
-- **Automated Data Extraction**: Retrieve product data from an external API and serialize it in Parquet format for efficient storage and processing.
-- **Cloud Data Ingestion**: Securely upload raw Parquet files to Azure Blob Storage.
-- **Orchestrated Transformation**: Use Azure Data Factory (ADF) to manage schema, transform data, and load it into Azure SQL Database.
-- **SQL-Based Validation**: Explore and validate data using modular SQL scripts.
-- **Business Intelligence**: Visualize key metrics (e.g., average price vs. rating by category) in an interactive Power BI dashboard.
+- **Automated Data Extraction**: Fetch product data via Python and persist it in efficient **Parquet** format.
+- **Cloud Ingestion**: Upload raw Parquet files securely to **Azure Blob Storage**.
+- **Orchestrated Transformation (ADF)**: Ingest, transform, and load into **Azure SQL** using ADF Data Flows.
+  - Derived columns: `finalPrice`, `ratingCategory`, `stockValue`, `stockAlertLevel`.
+  - Loads the enriched dataset into `dbo.Products_Enriched`.
+- **Analytical SQL Queries**: Designed and executed in **Azure Data Studio** to explore and visualize product insights.
+- **Infrastructure as Code**: Exported **ARM templates** for ADF to enable reproducible deployment.
 
 ---
 
@@ -20,13 +22,10 @@ This repository delivers a robust, cloud-native ETL (Extract, Transform, Load) p
 
 ```mermaid
 flowchart TD
-    A[API DummyJSON] -->|Extract| B[Python Script]
-    B -->|Save as Parquet| C[Raw Data Parquet]
-    C -->|Upload| D[Azure Blob Storage]
-    D -->|Ingest| E[Azure Data Factory]
-    E -->|Transform and Load| F[Azure SQL Database]
-    F -->|Query| G[SQL Scripts]
-    F -->|Visualize| H[Power BI Dashboard]
+    A[Extract Data with Python] -->|Save as Parquet| B[Azure Blob Storage]
+    B -->|Ingest into Pipeline| C[Azure Data Factory]
+    C -->|Transform & Load (Data Flow)| D[Azure SQL Database]
+    D -->|Run Analytical Queries| E[Azure Data Studio Visualizations]
 ```
 
 ---
@@ -35,144 +34,118 @@ flowchart TD
 
 ```
 Azure_Project_ETL_SQL_PowerBI/
-├── config/                   # Configuration files
+├── adf_templates/ # Exported ARM templates (ADF) + visuals
+│   ├── factory_base/
+│   │   ├── alexvidi-adf-sales-pipeline_ARMTemplateForFactory.json
+│   │   └── alexvidi-adf-sales-pipeline_ARMTemplateParametersForFactory.json
+│   ├── images/ # Screenshots of Data Flow & Pipeline
+│   │   ├── dataflow_products_enriched_derived_sink.png
+│   │   └── dataflow_sink_mapping_products_enriched.png
+│   ├── master_deployment/
+│   │   ├── ArmTemplate_0.json
+│   │   ├── ArmTemplate_master.json
+│   │   └── ArmTemplateParameters_master.json
+│   ├── pipeline_deployment/
+│   │   ├── ARMTemplateForFactory.json
+│   │   └── ARMTemplateParametersForFactory.json
+│   └── README_ADF.md
+│
+├── config/
+│   └── config.py # Project config (non-secrets)
+│
 ├── data/
 │   └── raw/
-│       └── products.parquet  # Extracted Parquet dataset
-├── queries/                  # SQL scripts for data exploration
-│   ├── avg_price_by_category.sql
-│   ├── top_rated_products.sql
-│   └── products_low_stock.sql
-├── reports/                  # Power BI artifacts and exports
-│   ├── visual_average_price_rating.pbix
-│   ├── visual_average_price_rating.pbit
-│   └── visual_average_price_rating.pdf
-├── src/                      # ETL Python scripts
+│       ├── products.csv
+│       └── products.parquet # Extracted Parquet dataset
+│
+├── queries ADS/ # SQL analytical queries (Azure Data Studio)
+│   ├── average_rating_by_category.sql
+│   ├── high_discount_high_rating_products.sql
+│   └── top3_products_by_stock_value.sql
+│
+├── visualizations ADS/ # Chart from Azure Data Studio
+│   └── product stock status by category.png
+│
+├── src/ # ETL Python scripts
 │   ├── extract_data.py
 │   └── upload_to_blob.py
-├── .env                      # Environment variables (not committed)
-├── requirements.txt          # Python dependencies
-├── README.md                 # Project documentation
+│
+├── .env # Environment variables (not committed)
+├── requirements.txt # Python dependencies
+├── README.md 
 └── .gitignore
 ```
 
 ---
 
-## Prerequisites
-
-- **Python 3.8+** and `pip`
-- **Azure Subscription** with permissions for:
-  - Blob Storage
-  - Data Factory
-  - SQL Database
-- **Power BI Desktop** (for report development)
-
 ---
 
-## Getting Started
+## How to Run the Project
 
-### 1. Clone the Repository
-
-```bash
-git clone https://github.com/alexvidi/Azure_Project_ETL_SQL_PowerBI.git
-cd Azure_Project_ETL_SQL_PowerBI
-```
-
-### 2. Set Up Python Environment
-
-```bash
-python -m venv venv
-# On Windows:
-venv\Scripts\activate
-# On macOS/Linux:
-source venv/bin/activate
-```
-
-### 3. Install Dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Configure Environment Variables
-
-Copy `.env.example` to `.env` and populate with your Azure credentials:
-
-```ini
-STORAGE_ACCOUNT_NAME=...
-STORAGE_ACCOUNT_KEY=...
-CONTAINER_NAME=raw
-SQL_SERVER=...
-SQL_DATABASE=...
-SQL_USERNAME=...
-SQL_PASSWORD=...
-```
-
----
-
-## Running the ETL Pipeline
-
-### 1. Extract Data
+### 1. Extract Data Locally
+Run the Python extraction script to generate the Parquet file:
 
 ```bash
 python src/extract_data.py
 ```
-- Fetches product data from the API, cleans it, and writes `products.parquet` to `data/raw/`.
 
-
-### 2. Upload to Azure Blob Storage
+### 2. Upload Data to Azure Blob Storage
+Upload the generated dataset to Azure:
 
 ```bash
 python src/upload_to_blob.py
 ```
-- Uploads the Parquet file to your Azure Blob Storage container.
 
-> **Note:** Data transformation and loading into SQL are orchestrated via Azure Data Factory.
+### 3. Run Data Flow in Azure Data Factory
+1. Open the `alexvidi-adf-sales-pipeline` in the Azure Portal.
+2. Trigger the pipeline `PL_DataFlow_ProductsToSQL`.
+
+The Data Flow will:
+
+- Read the Parquet file from Azure Blob.
+- Apply 4 derived transformations (`finalPrice`, `ratingCategory`, `stockValue`, `stockAlertLevel`).
+- Load the transformed data into Azure SQL table `dbo.Products_Enriched`.
+
+### 4. Run Analytical Queries in Azure Data Studio
+Open the SQL files in `/queries ADS` and execute them against your Azure SQL Database to generate insights and charts.
 
 ---
 
-## Azure Data Factory Orchestration
+## SQL Analytics & Visualization
 
-- **Linked Services**: Connect to Blob Storage and SQL Database.
-- **Datasets**: Define Parquet source and SQL sink.
-- **Data Flow**: Map schema and load into `dbo.products`.
-- **Pipeline**: Automate the end-to-end ETL process.
+All analytical queries were executed in **Azure Data Studio**.  
+Each script explores a different business insight:
 
-After execution, validate with:
+| Query | Description |
+|-------|--------------|
+| `average_rating_by_category.sql` | Calculates the average rating per product category. |
+| `high_discount_high_rating_products.sql` | Identifies high-rated products with strong discounts and available stock. |
+| `top3_products_by_stock_value.sql` | Ranks top 3 products by total stock value in each category. |
 
-```sql
-SELECT TOP 10 * FROM dbo.products;
+### Visualization
+All results were visualized directly in **Azure Data Studio Charts**, such as:
+- **Product Stock Status by Category** (`visualizations ADS/product stock status by category.png`)
+
+---
+
+## Deployment & Infrastructure
+
+All Azure Data Factory assets (pipelines, datasets, linked services, and data flows) are exported as **ARM templates** for full reproducibility.
+
+To redeploy this factory:
+
+```bash
+az deployment group create \
+  --resource-group data-lake-rg \
+  --template-file adf_templates/master_deployment/ArmTemplate_master.json \
+  --parameters @adf_templates/master_deployment/ArmTemplateParameters_master.json \
+  --parameters factoryName="alexvidi-adf-sales-pipeline"
 ```
 
----
-
-## Power BI Analytics
-
-- Open `reports/visual_average_price_rating.pbix` in Power BI Desktop.
-- Refresh the data connection to Azure SQL Database.
-- Explore the "Average Price and Average Rating by Product Category" visualization.
+The templates can be found under `adf_templates/`, organized by factory, pipeline, and master deployment scope.
 
 ---
 
-## SQL Query Library
-
-Located in `queries/`:
-
-- `avg_price_by_category.sql`
-- `top_rated_products.sql`
-- `products_low_stock.sql`
-
-Use these scripts in Azure Data Studio or the SQL Query Editor for further analysis.
-
----
-
-## Next Steps
-
-- Enhance transformation logic in ADF Data Flows.
-- Schedule automated pipeline runs.
-- Expand Power BI dashboards with additional metrics and filters.
-
----
 
 ## Author
 
@@ -186,8 +159,6 @@ Use these scripts in Azure Data Studio or the SQL Query Editor for further analy
 ## License
 
 This project is licensed under the MIT License. See `LICENSE` for details.
-
-
 
 
 

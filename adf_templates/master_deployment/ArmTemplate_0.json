@@ -1,0 +1,283 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "alexvidi-adf-sales-pipeline"
+        },
+        "AzureBlobStorage1_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'AzureBlobStorage1'"
+        },
+        "AzureSqlDatabase_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'AzureSqlDatabase'"
+        },
+        "AzureSqlDatabase_properties_typeProperties_server": {
+            "type": "string",
+            "defaultValue": "alexvidi-sql-server-1.database.windows.net"
+        },
+        "AzureSqlDatabase_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "sales_data_db"
+        },
+        "AzureSqlDatabase_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "alexvidi"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureBlobStorage1')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Linked service to Azure Blob Storage (raw data)",
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('AzureBlobStorage1_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureSqlDatabase')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Linked service to connect Azure Data Factory with Azure SQL Database where the final transformed product data will be loaded",
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "server": "[parameters('AzureSqlDatabase_properties_typeProperties_server')]",
+                    "database": "[parameters('AzureSqlDatabase_properties_typeProperties_database')]",
+                    "encrypt": "mandatory",
+                    "trustServerCertificate": false,
+                    "authenticationType": "SQL",
+                    "userName": "[parameters('AzureSqlDatabase_properties_typeProperties_userName')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('AzureSqlDatabase_password')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Parquet')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureBlobStorage1",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "Parquet",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": "products.parquet",
+                        "container": "raw"
+                    },
+                    "compressionCodec": "snappy"
+                },
+                "schema": [
+                    {
+                        "name": "id",
+                        "type": "INT64"
+                    },
+                    {
+                        "name": "title",
+                        "type": "UTF8"
+                    },
+                    {
+                        "name": "category",
+                        "type": "UTF8"
+                    },
+                    {
+                        "name": "price",
+                        "type": "DOUBLE"
+                    },
+                    {
+                        "name": "discountPercentage",
+                        "type": "DOUBLE"
+                    },
+                    {
+                        "name": "rating",
+                        "type": "DOUBLE"
+                    },
+                    {
+                        "name": "stock",
+                        "type": "INT64"
+                    },
+                    {
+                        "name": "availabilityStatus",
+                        "type": "UTF8"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage1')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureSqlTable1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureSqlDatabase",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "Products_Enriched"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dataflow1')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "Parquet",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sourceParquet",
+                            "description": "Parquet file with product from Azure Blob Storage"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "AzureSqlTable1",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sinkSqlProducts",
+                            "description": "Loads the transformed product dataset into Azure SQL Database table Products_Enriched for analysis and reporting.\n"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "finalPrice",
+                            "description": "Creates a new column finalPrice that calculates the actual product price after applying the discount. It multiplies the original price by the discount rate and rounds the result to two decimals to ensure accurate currency values."
+                        },
+                        {
+                            "name": "ratingCategory",
+                            "description": "Converts numeric ratings into three text categories: Excellent (≥4), Good (3–3.99), or Poor (<3)."
+                        },
+                        {
+                            "name": "stockValue",
+                            "description": "Calculates the total stock value per product by multiplying the original price by the stock quantity."
+                        },
+                        {
+                            "name": "stockAlertLevel",
+                            "description": "Classifies products by stock quantity into three levels: High Stock (>50), Medium Stock (11–50), and Critical Low (≤10)."
+                        }
+                    ],
+                    "scriptLines": [
+                        "source(output(",
+                        "          id as long,",
+                        "          title as string,",
+                        "          category as string,",
+                        "          price as double,",
+                        "          discountPercentage as double,",
+                        "          rating as double,",
+                        "          stock as long,",
+                        "          availabilityStatus as string",
+                        "     ),",
+                        "     allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     ignoreNoFilesFound: false,",
+                        "     format: 'parquet') ~> sourceParquet",
+                        "sourceParquet derive(finalPrice = round(price * (1 - discountPercentage / 100), 2)) ~> finalPrice",
+                        "finalPrice derive(ratingCategory = case(     rating >= 4, 'Excellent',     rating >= 3, 'Good',     'Poor' )) ~> ratingCategory",
+                        "ratingCategory derive(stockValue = round(price * stock, 2)) ~> stockValue",
+                        "stockValue derive(stockAlertLevel = iif(stock > 50, 'High Stock', iif(stock > 10, 'Medium Stock', 'Critical Low'))) ~> stockAlertLevel",
+                        "stockAlertLevel sink(allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     deletable:false,",
+                        "     insertable:true,",
+                        "     updateable:false,",
+                        "     upsertable:false,",
+                        "     recreate:true,",
+                        "     format: 'table',",
+                        "     skipDuplicateMapInputs: true,",
+                        "     skipDuplicateMapOutputs: true,",
+                        "     errorHandlingOption: 'stopOnFirstError') ~> sinkSqlProducts"
+                    ]
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/datasets/Parquet')]",
+                "[concat(variables('factoryId'), '/datasets/AzureSqlTable1')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_DataFlow_ProductsToSQL')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Runs the Data Flow that processes product data and loads it into Azure SQL Database.\n",
+                "activities": [
+                    {
+                        "name": "DF_Run_ProductTransformation",
+                        "description": "Executes the Data Flow that transforms and loads product data.\n",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "dataflow1",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "sourceParquet": {},
+                                    "sinkSqlProducts": {}
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "annotations": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/dataflows/dataflow1')]"
+            ]
+        }
+    ]
+}

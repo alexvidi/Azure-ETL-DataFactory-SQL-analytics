@@ -2,42 +2,63 @@ import requests
 import pandas as pd
 import os
 
-# Step 1: Set the API endpoint URL
+# Set the API endpoint URL
 # This URL provides a list of products in JSON format
 api_url = "https://dummyjson.com/products"
 
-# Step 2: Send a GET request to the API
+# Send a GET request to the API
 # The response returns a dictionary with a key called "products"
 response = requests.get(api_url)
 data = response.json()
 
-# Step 3: Extract the list of products from the response
+# Extract the list of products from the response
 # Each product is a dictionary with different fields (id, title, price, etc.)
 products = data["products"]
 
-# Step 4: Convert the list of products into a Pandas DataFrame
-# A DataFrame is like a table where each row is a product and each column is a field
+# Convert the list of products into a Pandas DataFrame
 df = pd.DataFrame(products)
 
-# Step 5: Remove complex columns (like lists or dictionaries)
+# Remove complex columns (like lists or dictionaries)
 # These columns are not useful for simple analysis or saving to Parquet
 for column in df.columns:
     if df[column].apply(lambda x: isinstance(x, (list, dict))).any():
         df.drop(columns=column, inplace=True)
 
-# Step 6: Create the output folder
-# This ensures that the folder 'data/raw' is available to save the file
-os.makedirs("data/raw", exist_ok=True)
+# Drop text-heavy or irrelevant columns
+for col in ["description", 
+    "brand", 
+    "warrantyInformation", 
+    "shippingInformation", 
+    "returnPolicy" , 
+    "thumbnail", 
+    "description", 
+    "thumbnail", 
+    "sku",
+    "weight",
+    "dimensions",
+    "tags",
+    "meta",
+    "minimumOrderQuantity",
+    "barcode",
+    "images"]:
+    if col in df.columns:
+        df.drop(columns=col, inplace=True)      
 
-# Step 7: Save the cleaned DataFrame to a Parquet file
-# Parquet is a modern file format that is fast and efficient for large datasets
-output_path = "data/raw/products.parquet"
-df.to_parquet(output_path, index=False)
+# Determine the project root directory
+base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Confirm success
-print(f"Data successfully saved to {output_path}")
+# Define output paths for both Parquet and CSV files
+parquet_path = os.path.join(base_dir, "data", "raw", "products.parquet")
+csv_path = os.path.join(base_dir, "data", "raw", "products.csv")
 
-# Validation
-print("Shape:", df.shape)  # Number of rows and columns
-print("Columns:", df.columns.tolist())  # List of column names
-print(df.head())  # Preview of the first 5 rows
+# Create the target directory if it does not already exist
+os.makedirs(os.path.dirname(parquet_path), exist_ok=True)
+
+df.to_parquet(parquet_path, index=False)
+df.to_csv(csv_path, index=False, encoding="utf-8")
+
+# Validation : Number of rows and columns, column names, and preview of the data
+print(f"Data successfully saved to:\n- {parquet_path}\n- {csv_path}")
+print("Shape:", df.shape)
+print("Columns:", df.columns.tolist())
+print(df.head())
