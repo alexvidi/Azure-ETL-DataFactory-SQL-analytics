@@ -78,8 +78,6 @@ Azure_Project_ETL_SQL_PowerBI/
 
 ---
 
----
-
 ## How to Run the Project
 
 ### 1. Extract Data Locally
@@ -108,6 +106,40 @@ The Data Flow will:
 
 ### 4. Run Analytical Queries in Azure Data Studio
 Open the SQL files in `/queries ADS` and execute them against your Azure SQL Database to generate insights and charts.
+
+---
+
+## Data Flow Transformations (Azure Data Factory)
+
+The transformation logic was implemented in **Azure Data Factory (ADF)** using a visual **Data Flow** pipeline.  
+This flow reads the raw Parquet file from **Azure Blob Storage**, applies several derived transformations, and loads the enriched dataset into **Azure SQL Database** (`dbo.Products_Enriched`).
+
+### Transformations Applied
+
+1. **finalPrice**
+   - Formula: `price * (1 - discountPercentage / 100)`
+   - Computes the actual selling price after applying the product discount.
+
+2. **ratingCategory**
+   - Logic:
+     - `Excellent` → rating ≥ 4.0  
+     - `Good` → 3.0 ≤ rating < 4.0  
+     - `Poor` → rating < 3.0  
+   - Classifies each product according to its customer rating.
+
+3. **stockValue**
+   - Formula: `price * stock`
+   - Calculates the total potential value of stock for each product.
+
+4. **stockAlertLevel**
+   - Logic:
+     - `High Stock` → stock > 50  
+     - `Medium Stock` → 10 ≤ stock ≤ 50  
+     - `Critical Low` → stock < 10  
+   - Defines stock alert levels to support inventory control and analytics.
+
+5. **Sink: Products_Enriched**
+   - Loads the transformed dataset into **Azure SQL Database** for further analysis and visualization in **Azure Data Studio**.
 
 ---
 
@@ -148,7 +180,6 @@ az deployment group create \
 The templates can be found under `adf_templates/`, organized by factory, pipeline, and master deployment scope.
 
 ---
-
 
 ## Author
 
